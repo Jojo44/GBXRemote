@@ -10,11 +10,11 @@ This PHP Library allows you to connect with a Maniaplanet Server to display e.g.
 apt-get install php5-xmlrpc
 ```
 ###Windows
-remove the ; in front of the line:
+uncomment the following line in your php.ini (remove ; in front of the line)
 ```
 ;extension=php_xmlrpc.dll
 ```
-##PHP Sample
+##Sample Code
 ```php
 $client = new GBXRemote();
 $client->connect("127.0.0.1", 5000);
