@@ -5,6 +5,8 @@
  * @author Jojo <jojo@zero-clan.org>
  */
 
+use Exception;
+
 class GBXRemote {
 
     private $socket;
