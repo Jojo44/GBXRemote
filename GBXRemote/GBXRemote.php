@@ -5,7 +5,7 @@
  * @author Jojo <jojo@zero-clan.org>
  */
 
-use Exception;
+use \Exception;
 
 class GBXRemote {
 
