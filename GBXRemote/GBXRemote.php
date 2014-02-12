@@ -9,10 +9,25 @@ use \Exception;
 
 class GBXRemote {
 
+    /**
+     * The socket resource
+     *
+     * @var resource
+     */
     private $socket;
 
+    /**
+     * A request and the matching response have the same handler
+     *
+     * @var int
+     */
     private $handler = 0x80000000;
 
+    /**
+     * Creates a new GBXRemote instance
+     *
+     * @throw \Exception
+     */
     public function __construct()
     {
         if(!extension_loaded("sockets"))
@@ -35,9 +50,16 @@ class GBXRemote {
         }
     }
 
+    /**
+     * Initial connect to dedicated server
+     *
+     * @param string $ip
+     * @param int $port
+     * @return bool
+     * @throws \Exception
+     */
     public function connect($ip, $port)
     {
-
         if(($result = socket_connect($this->socket, $ip, $port)) === false)
         {
             throw new Exception(socket_strerror(socket_last_error()));
@@ -61,7 +83,15 @@ class GBXRemote {
         return true;
     }
 
-    public function query()
+    /**
+     * Sends a request to the dedicated server and returns response
+     *
+     * @param string $methodName
+     * @param mixed $arguments,...
+     * @return mixed
+     * @throws \Exception
+     */
+    public function query($methodName, $arguments = null)
     {
         $params = func_get_args();
         $method = array_shift($params);
@@ -95,6 +125,42 @@ class GBXRemote {
         return $response;
     }
 
+    /**
+     * Handles dynamic calls to the obejct
+     *
+     * @param string $name
+     * @param array $args
+     * @return mixed
+     */
+    public function __call($name, $args)
+    {
+        switch (count($args))
+        {
+            case 0:
+                return $this->query($name);
+            case 1:
+                return $this->query($name, $args[0]);
+
+            case 2:
+                return $this->query($name, $args[0], $args[1]);
+
+            case 3:
+                return $this->query($name, $args[0], $args[1], $args[2]);
+
+            case 4:
+                return $this->query($name, $args[0], $args[1], $args[2], $args[3]);
+
+            default:
+                array_unshift($args, $name);
+                return call_user_func_array(array($this, "query"), $args);
+        }
+    }
+
+    /**
+     * Closes the socket
+     *
+     * @return void
+     */
     public function close()
     {
         socket_close($this->socket);
