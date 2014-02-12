@@ -15,6 +15,20 @@ class GBXRemote {
 
     public function __construct()
     {
+        if(!extension_loaded("sockets"))
+        {
+            echo "PHP sockets extension required".PHP_EOL;
+
+            exit(1);
+        }
+
+        if(!extension_loaded("xmlrpc"))
+        {
+            echo "PHP xmlrpc extension required".PHP_EOL;
+
+            exit(1);
+        }
+
         if(($this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false)
         {
             throw new Exception(socket_strerror(socket_last_error()));
